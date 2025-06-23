@@ -121,7 +121,7 @@ export default function Map({ schools, userPosition }: MapProps) {
               <span className="mx-2">•</span>
               <span className="inline-flex items-center">
                 <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
-                Proches (< 5km)
+                Proches (&lt; 5km)
               </span>
             </>
           )}
