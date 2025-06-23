@@ -111,7 +111,7 @@ export default function FileUpload({ onFileSelect, isLoading }: FileUploadProps)
           <ExternalLink className="h-5 w-5 text-blue-500 mt-0.5" />
           <div className="flex-1">
             <h3 className="text-sm font-medium text-blue-900 mb-2">
-              Fichiers disponibles
+              Fichiers de données officielles disponibles
             </h3>
             <p className="text-sm text-blue-800 mb-3">
               Vous pouvez télécharger des fichiers de données d'établissements scolaires officiels depuis le portail open data du Ministère de l'Éducation Nationale.
@@ -126,7 +126,7 @@ export default function FileUpload({ onFileSelect, isLoading }: FileUploadProps)
               Accéder aux données officielles sur data.education.gouv.fr
             </a>
             <p className="text-xs text-blue-700 mt-2">
-              Recherchez les fichiers contenant les données d'établissements avec coordonnées géographiques et IPS.
+              Recherchez les fichiers contenant les données d'établissements avec coordonnées géographiques et données IPS (Indice de Position Sociale).
             </p>
           </div>
         </div>
