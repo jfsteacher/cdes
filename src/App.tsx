@@ -11,7 +11,9 @@ import { GraduationCap, MapPin, Calculator, AlertCircle, FileText, ExternalLink 
 
 function App() {
   const [schools, setSchools] = useState<School[]>([]);
+  const [filteredSchools, setFilteredSchools] = useState<School[]>([]);
   const [userPosition, setUserPosition] = useState<Position | null>(null);
+  const [sectorFilter, setSectorFilter] = useState<'all' | 'public' | 'private'>('all');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +26,7 @@ function App() {
         const csvRows = parseCSV(text);
         const parsedSchools = csvRowsToSchools(csvRows);
         setSchools(parsedSchools);
+        applyFilters(parsedSchools, 'all');
       } catch (err) {
         console.log('Sample data not loaded, waiting for user upload');
       }
@@ -55,6 +58,8 @@ function App() {
       // Recalculate distances if user position is set
       if (userPosition) {
         calculateDistances(parsedSchools, userPosition);
+      } else {
+        applyFilters(parsedSchools, sectorFilter);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors du traitement du fichier');
@@ -88,6 +93,8 @@ function App() {
       // Calculate distances if schools are loaded
       if (schools.length > 0) {
         calculateDistances(schools, finalPosition);
+      } else {
+        applyFilters(schools, sectorFilter);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la géolocalisation');
@@ -110,7 +117,33 @@ function App() {
     // Sort by distance
     schoolsWithDistances.sort((a, b) => (a.distance || 0) - (b.distance || 0));
     
-    setSchools(schoolsWithDistances);
+    const updatedSchools = schoolsWithDistances;
+    setSchools(updatedSchools);
+    applyFilters(updatedSchools, sectorFilter);
+  };
+
+  const applyFilters = (schoolList: School[], sector: 'all' | 'public' | 'private') => {
+    let filtered = schoolList;
+    
+    if (sector !== 'all') {
+      filtered = schoolList.filter(school => {
+        if (!school.type) return false;
+        const schoolType = school.type.toLowerCase();
+        if (sector === 'public') {
+          return schoolType.includes('public');
+        } else if (sector === 'private') {
+          return schoolType.includes('privé') || schoolType.includes('private');
+        }
+        return true;
+      });
+    }
+    
+    setFilteredSchools(filtered);
+  };
+
+  const handleSectorFilterChange = (newFilter: 'all' | 'public' | 'private') => {
+    setSectorFilter(newFilter);
+    applyFilters(schools, newFilter);
   };
 
   return (
@@ -149,14 +182,14 @@ function App() {
         )}
 
         {/* Info Banner */}
-        {schools.length > 0 && !userPosition && (
+        {filteredSchools.length > 0 && !userPosition && (
           <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div className="flex items-start">
               <FileText className="h-5 w-5 text-blue-400 mt-0.5 mr-3" />
               <div>
                 <h3 className="text-sm font-medium text-blue-800">Données chargées</h3>
                 <p className="text-sm text-blue-700 mt-1">
-                  {schools.length} établissements ont été chargés. Définissez votre position pour calculer les distances.
+                  {filteredSchools.length} établissements ont été chargés. Définissez votre position pour calculer les distances.
                 </p>
               </div>
             </div>
@@ -172,7 +205,7 @@ function App() {
               </div>
               <div className="ml-4">
                 <dt className="text-sm font-medium text-gray-500">Établissements</dt>
-                <dd className="text-2xl font-bold text-gray-900">{schools.length}</dd>
+                <dd className="text-2xl font-bold text-gray-900">{filteredSchools.length}</dd>
               </div>
             </div>
           </div>
@@ -199,7 +232,7 @@ function App() {
               <div className="ml-4">
                 <dt className="text-sm font-medium text-gray-500">Distances calculées</dt>
                 <dd className="text-2xl font-bold text-gray-900">
-                  {schools.filter(s => s.distance !== undefined).length}
+                  {filteredSchools.filter(s => s.distance !== undefined).length}
                 </dd>
               </div>
             </div>
@@ -216,6 +249,54 @@ function App() {
             
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Filtres
+              </h2>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Type d'établissement
+                  </label>
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="sector"
+                        value="all"
+                        checked={sectorFilter === 'all'}
+                        onChange={(e) => handleSectorFilterChange(e.target.value as 'all')}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">Tous les établissements</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="sector"
+                        value="public"
+                        checked={sectorFilter === 'public'}
+                        onChange={(e) => handleSectorFilterChange(e.target.value as 'public')}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">Établissements publics</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="sector"
+                        value="private"
+                        checked={sectorFilter === 'private'}
+                        onChange={(e) => handleSectorFilterChange(e.target.value as 'private')}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">Établissements privés</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Fichier des établissements
               </h2>
               <FileUpload onFileSelect={handleFileSelect} isLoading={isLoading} />
@@ -225,10 +306,10 @@ function App() {
           {/* Right Column - Results and Map */}
           <div className="lg:col-span-2 space-y-8">
             {/* Map */}
-            <Map schools={schools} userPosition={userPosition} />
+            <Map schools={filteredSchools} userPosition={userPosition} />
             
             {/* Results List */}
-            <SchoolList schools={schools} userPosition={userPosition} />
+            <SchoolList schools={filteredSchools} userPosition={userPosition} />
           </div>
         </div>
       </main>
