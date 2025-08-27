@@ -157,7 +157,7 @@ function App() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Calculateur de Distance d'Établissements Scolaires
+                Calculateur de Distance entre Établissements Scolaires
               </h1>
               <p className="text-gray-600">
                 Trouvez les établissements scolaires les plus proches de votre position
@@ -320,7 +320,7 @@ function App() {
           <div className="flex flex-col items-center justify-center space-y-4">
             <div className="flex items-center text-sm text-gray-500">
               <GraduationCap className="h-4 w-4 mr-2" />
-              Calculateur de Distance d'Établissements Scolaires - Trouvez les établissements les plus proches
+              Calculateur de Distance entre Établissements Scolaires - Trouvez les établissements les plus proches
             </div>
             
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-gray-500">
