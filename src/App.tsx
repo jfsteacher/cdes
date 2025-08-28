@@ -81,7 +81,6 @@ function App() {
       if (userPosition) {
         calculateDistances(parsedSchools, userPosition);
       } else {
-        applyFilters(parsedSchools, sectorFilter);
         applyFilters(parsedSchools, sectorFilter, levelFilter);
       }
     } catch (err) {
@@ -117,7 +116,7 @@ function App() {
       if (schools.length > 0) {
         calculateDistances(schools, finalPosition);
       } else {
-        applyFilters(schools, sectorFilter, levelFilter);
+        setFilteredSchools(schools);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la géolocalisation');
@@ -148,7 +147,7 @@ function App() {
   const applyFilters = (schoolList: School[], sector: 'all' | 'public' | 'private', level: 'all' | 'college' | 'lycee') => {
     let filtered = schoolList;
     
-    // Apply level filter
+    // Apply level filter first
     if (level !== 'all') {
       filtered = filtered.filter(school => {
         if (!school.name) return false;
@@ -162,9 +161,9 @@ function App() {
       });
     }
     
-    // Apply sector filter
+    // Apply sector filter second
     if (sector !== 'all') {
-      filtered = schoolList.filter(school => {
+      filtered = filtered.filter(school => {
         if (!school.type) return false;
         const schoolType = school.type.toLowerCase();
         if (sector === 'public') {
