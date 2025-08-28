@@ -18,44 +18,6 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load lille.csv data on component mount
-  useEffect(() => {
-    const loadInitialData = async () => {
-      setIsLoading(true);
-      setError(null);
-      
-      try {
-        const response = await fetch('./src/data/lille.csv');
-        if (!response.ok) {
-          throw new Error('Impossible de charger le fichier lille.csv');
-        }
-        
-        const text = await response.text();
-        const csvRows = parseCSV(text);
-        
-        if (csvRows.length === 0) {
-          throw new Error('Le fichier lille.csv ne contient aucune donnée valide');
-        }
-        
-        const parsedSchools = csvRowsToSchools(csvRows);
-        
-        if (parsedSchools.length === 0) {
-          throw new Error('Aucun établissement valide trouvé dans le fichier lille.csv');
-        }
-        
-        console.log(`Chargé ${parsedSchools.length} établissements depuis lille.csv`);
-          applyFilters(parsedSchools, sectorFilter, levelFilter);
-        applyFilters(parsedSchools, sectorFilter);
-      } catch (err) {
-        console.error('Erreur lors du chargement des données initiales:', err);
-        setError(err instanceof Error ? err.message : 'Erreur lors du chargement des données initiales');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadInitialData();
-  }, []);
 
   const handleFileSelect = async (file: File) => {
     setIsLoading(true);
