@@ -14,6 +14,7 @@ function App() {
   const [filteredSchools, setFilteredSchools] = useState<School[]>([]);
   const [userPosition, setUserPosition] = useState<Position | null>(null);
   const [sectorFilter, setSectorFilter] = useState<'all' | 'public' | 'private'>('all');
+  const [levelFilter, setLevelFilter] = useState<'all' | 'college' | 'lycee'>('all');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,7 +44,7 @@ function App() {
         }
         
         console.log(`Chargé ${parsedSchools.length} établissements depuis lille.csv`);
-        setSchools(parsedSchools);
+          applyFilters(parsedSchools, sectorFilter, levelFilter);
         applyFilters(parsedSchools, sectorFilter);
       } catch (err) {
         console.error('Erreur lors du chargement des données initiales:', err);
@@ -81,6 +82,7 @@ function App() {
         calculateDistances(parsedSchools, userPosition);
       } else {
         applyFilters(parsedSchools, sectorFilter);
+        applyFilters(parsedSchools, sectorFilter, levelFilter);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors du traitement du fichier');
@@ -115,7 +117,7 @@ function App() {
       if (schools.length > 0) {
         calculateDistances(schools, finalPosition);
       } else {
-        applyFilters(schools, sectorFilter);
+        applyFilters(schools, sectorFilter, levelFilter);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la géolocalisation');
@@ -140,12 +142,27 @@ function App() {
     
     const updatedSchools = schoolsWithDistances;
     setSchools(updatedSchools);
-    applyFilters(updatedSchools, sectorFilter);
+    applyFilters(updatedSchools, sectorFilter, levelFilter);
   };
 
-  const applyFilters = (schoolList: School[], sector: 'all' | 'public' | 'private') => {
+  const applyFilters = (schoolList: School[], sector: 'all' | 'public' | 'private', level: 'all' | 'college' | 'lycee') => {
     let filtered = schoolList;
     
+    // Apply level filter
+    if (level !== 'all') {
+      filtered = filtered.filter(school => {
+        if (!school.name) return false;
+        const schoolName = school.name.toLowerCase();
+        if (level === 'college') {
+          return schoolName.includes('collège') || schoolName.includes('college');
+        } else if (level === 'lycee') {
+          return schoolName.includes('lycée') || schoolName.includes('lycee');
+        }
+        return true;
+      });
+    }
+    
+    // Apply sector filter
     if (sector !== 'all') {
       filtered = schoolList.filter(school => {
         if (!school.type) return false;
@@ -164,7 +181,12 @@ function App() {
 
   const handleSectorFilterChange = (newFilter: 'all' | 'public' | 'private') => {
     setSectorFilter(newFilter);
-    applyFilters(schools, newFilter);
+    applyFilters(schools, newFilter, levelFilter);
+  };
+
+  const handleLevelFilterChange = (newFilter: 'all' | 'college' | 'lycee') => {
+    setLevelFilter(newFilter);
+    applyFilters(schools, sectorFilter, newFilter);
   };
 
   return (
@@ -274,6 +296,47 @@ function App() {
               </h2>
               <div className="space-y-3">
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Niveau d'établissement
+                  </label>
+                  <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="level"
+                        value="all"
+                        checked={levelFilter === 'all'}
+                        onChange={(e) => handleLevelFilterChange(e.target.value as 'all')}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">Tous les niveaux</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="level"
+                        value="college"
+                        checked={levelFilter === 'college'}
+                        onChange={(e) => handleLevelFilterChange(e.target.value as 'college')}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">Collèges</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="level"
+                        value="lycee"
+                        checked={levelFilter === 'lycee'}
+                        onChange={(e) => handleLevelFilterChange(e.target.value as 'lycee')}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">Lycées</span>
+                    </label>
+                  </div>
+                </div>
+                
+                <div className="pt-3 border-t border-gray-200">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Type d'établissement
                   </label>
