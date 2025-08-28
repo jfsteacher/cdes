@@ -58,6 +58,7 @@ export function csvRowsToSchools(rows: CSVRow[]): School[] {
       // For the college data format, we need to handle the specific columns
       const nameKey = 'appellation_officielle';
       const positionKey = 'position';
+      const uaiKey = 'uai';
       const sectorKey = 'secteur';
       const communeKey = 'libelle_commune';
       const departmentKey = 'libelle_departement';
@@ -92,6 +93,8 @@ export function csvRowsToSchools(rows: CSVRow[]): School[] {
         return {
           id: index,
           name: row[nameKeyGeneric],
+          uai: addressKey ? row[addressKey] : undefined,
+          uai: row[uaiKey],
           latitude,
           longitude,
           address: addressKey ? row[addressKey] : undefined,

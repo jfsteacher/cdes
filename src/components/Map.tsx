@@ -177,6 +177,12 @@ export default function Map({ schools, userPosition }: MapProps) {
                   <div className="p-2 max-w-xs">
                     <h4 className="font-semibold text-gray-900 mb-2">{school.name}</h4>
                     
+                    {school.uai && (
+                      <p className="text-sm text-gray-600 mb-1">
+                        <strong>UAI:</strong> <span className="font-mono text-blue-600">{school.uai}</span>
+                      </p>
+                    )}
+                    
                     {school.type && (
                       <p className="text-sm text-gray-600 mb-1">
                         <strong>Type:</strong> {school.type}
