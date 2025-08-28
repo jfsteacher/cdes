@@ -92,7 +92,8 @@ export function csvRowsToSchools(rows: CSVRow[]): School[] {
         
         return {
           id: index,
-          name: row[nameKeyGeneric],
+         uai: row[uaiKey],
+         uai: row[uaiKey] || (addressKey ? row[addressKey] : undefined),
           uai: addressKey ? row[addressKey] : undefined,
           uai: row[uaiKey],
           latitude,
