@@ -21,14 +21,24 @@ function App() {
   useEffect(() => {
     const loadSampleData = async () => {
       try {
-        const response = await fetch('/src/data/dataviz-ips-colleges.csv');
-        const text = await response.text();
-        const csvRows = parseCSV(text);
-        const parsedSchools = csvRowsToSchools(csvRows);
+        // Load colleges data
+        const collegesResponse = await fetch('/src/data/dataviz-ips-colleges.csv');
+        const collegesText = await collegesResponse.text();
+        const collegesCsvRows = parseCSV(collegesText);
+        const collegesSchools = csvRowsToSchools(collegesCsvRows);
+        
+        // Load lycées data
+        const lyceesResponse = await fetch('/src/data/dataviz-ips-lycees(3).csv');
+        const lyceesText = await lyceesResponse.text();
+        const lyceesCsvRows = parseCSV(lyceesText);
+        const lyceesSchools = csvRowsToSchools(lyceesCsvRows);
+        
+        // Combine both datasets
+        const parsedSchools = [...collegesSchools, ...lyceesSchools];
         setSchools(parsedSchools);
         applyFilters(parsedSchools, 'all');
       } catch (err) {
-        console.log('Sample data not loaded, waiting for user upload');
+        console.log('Sample data not loaded, waiting for user upload', err);
       }
     };
     
