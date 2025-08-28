@@ -22,23 +22,24 @@ function App() {
     const loadSampleData = async () => {
       try {
         // Load colleges data
-        const collegesResponse = await fetch('/src/data/dataviz-ips-colleges.csv');
+        const collegesResponse = await fetch('./src/data/dataviz-ips-colleges.csv');
         const collegesText = await collegesResponse.text();
         const collegesCsvRows = parseCSV(collegesText);
         const collegesSchools = csvRowsToSchools(collegesCsvRows);
         
         // Load lycées data
-        const lyceesResponse = await fetch('/src/data/dataviz-ips-lycees(3).csv');
+        const lyceesResponse = await fetch('./src/data/dataviz-ips-lycees(3).csv');
         const lyceesText = await lyceesResponse.text();
         const lyceesCsvRows = parseCSV(lyceesText);
         const lyceesSchools = csvRowsToSchools(lyceesCsvRows);
         
         // Combine both datasets
         const parsedSchools = [...collegesSchools, ...lyceesSchools];
+        console.log(`Loaded ${collegesSchools.length} colleges and ${lyceesSchools.length} lycées`);
         setSchools(parsedSchools);
         applyFilters(parsedSchools, 'all');
       } catch (err) {
-        console.log('Sample data not loaded, waiting for user upload', err);
+        console.error('Sample data not loaded, waiting for user upload', err);
       }
     };
     
