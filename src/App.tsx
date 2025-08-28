@@ -17,34 +17,6 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load the sample data on component mount
-  useEffect(() => {
-    const loadSampleData = async () => {
-      try {
-        // Load colleges data
-        const collegesResponse = await fetch('/src/data/dataviz-ips-colleges.csv');
-        const collegesText = await collegesResponse.text();
-        const collegesCsvRows = parseCSV(collegesText);
-        const collegesSchools = csvRowsToSchools(collegesCsvRows);
-        
-        // Load lycées data
-        const lyceesResponse = await fetch('/src/data/dataviz-ips-lycees(3).csv');
-        const lyceesText = await lyceesResponse.text();
-        const lyceesCsvRows = parseCSV(lyceesText);
-        const lyceesSchools = csvRowsToSchools(lyceesCsvRows);
-        
-        // Combine both datasets
-        const parsedSchools = [...collegesSchools, ...lyceesSchools];
-        setSchools(parsedSchools);
-        applyFilters(parsedSchools, 'all');
-      } catch (err) {
-        console.log('Sample data not loaded, waiting for user upload', err);
-      }
-    };
-    
-    loadSampleData();
-  }, []);
-
   const handleFileSelect = async (file: File) => {
     setIsLoading(true);
     setError(null);
