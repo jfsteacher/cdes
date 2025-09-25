@@ -13,9 +13,9 @@ export default function SchoolList({ schools, userPosition }: SchoolListProps) {
     if (!schools.length) return;
     
     const csvContent = [
-      'Rang,Nom,UAI,Distance (km),Latitude,Longitude,Adresse,Type',
+      'Rang,Nom,Distance (km),Latitude,Longitude,Adresse,Type',
       ...schools.map((school, index) => 
-        `${index + 1},"${school.name}","${school.uai || ''}",${school.distance || 0},${school.latitude},${school.longitude},"${school.address || ''}","${school.type || ''}"`)
+        `${index + 1},"${school.name}",${school.distance || 0},${school.latitude},${school.longitude},"${school.address || ''}","${school.type || ''}"`)
     ].join('\n');
     
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -93,13 +93,6 @@ export default function SchoolList({ schools, userPosition }: SchoolListProps) {
                 <div className="flex items-center text-sm text-gray-500">
                   <span>Coordonnées: {school.latitude.toFixed(6)}, {school.longitude.toFixed(6)}</span>
                 </div>
-                
-                {school.uai && (
-                  <div className="flex items-center text-sm text-gray-500 mt-1">
-                    <span className="font-medium text-gray-600">UAI:</span>
-                    <span className="ml-1 font-mono text-blue-600">{school.uai}</span>
-                  </div>
-                )}
               </div>
               
               <div className="text-right">
