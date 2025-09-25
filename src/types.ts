@@ -1,6 +1,7 @@
 export interface School {
   id: number;
   name: string;
+  uai?: string;
   address?: string;
   latitude: number;
   longitude: number;

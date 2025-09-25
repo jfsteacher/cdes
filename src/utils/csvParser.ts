@@ -55,6 +55,9 @@ function parseCSVLine(line: string, separator: string = ','): string[] {
 export function csvRowsToSchools(rows: CSVRow[]): School[] {
   return rows
     .map((row, index) => {
+      // Get all column keys to access by index
+      const columnKeys = Object.keys(row);
+      
       // For the college data format, we need to handle the specific columns
       const nameKey = 'appellation_officielle';
       const positionKey = 'position';
@@ -62,6 +65,9 @@ export function csvRowsToSchools(rows: CSVRow[]): School[] {
       const communeKey = 'libelle_commune';
       const departmentKey = 'libelle_departement';
       const ipsKey = 'ips';
+      
+      // UAI is always in the second column (index 1)
+      const uaiValue = columnKeys.length > 1 ? row[columnKeys[1]] : undefined;
       
       // Check if required columns exist
       if (!row[nameKey] || !row[positionKey]) {
@@ -91,7 +97,10 @@ export function csvRowsToSchools(rows: CSVRow[]): School[] {
         
         return {
           id: index,
-          name: row[nameKeyGeneric],
+         uai: row[uaiKey],
+          uai: uaiValue,
+          uai: addressKey ? row[addressKey] : undefined,
+          uai: row[uaiKey],
           latitude,
           longitude,
           address: addressKey ? row[addressKey] : undefined,
@@ -129,6 +138,7 @@ export function csvRowsToSchools(rows: CSVRow[]): School[] {
       return {
         id: index,
         name: row[nameKey],
+        uai: uaiValue,
         latitude,
         longitude,
         address,
